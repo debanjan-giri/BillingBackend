@@ -1,0 +1,10 @@
+// DRY = don't repeat yourself
+// work not complete
+
+// 1
+// subscription code
+// admin permission code
+// minor code 
+
+// 2 
+// only 2 controller db optimize work incomplete
