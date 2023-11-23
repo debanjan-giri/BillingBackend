@@ -17,35 +17,6 @@ export const createFoodController = async (req, res) => {
         message: "all details are required",
       });
     }
-    // get username from token
-    const username = req.tokenDetails.data;
-
-    // check DB if user is exist
-    const findUser = await AuthModel.findOne({ username }).select(
-      "created permission "
-    );
-    if (!findUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    // admin controller
-    if (findUser.permission == false) {
-      return res.status(400).json({
-        success: false,
-        message: "blocked by admin",
-      });
-    }
-    // Check year subscription
-    const userAccessYear = new Date(findUser.created);
-    userAccessYear.setFullYear(userAccessYear.getFullYear() + 1);
-    if (new Date() > userAccessYear) {
-      return res.status(400).json({
-        success: false,
-        message: "Account expired",
-      });
-    }
 
     // create food
     const createdFood = await FoodModel.create({
