@@ -36,7 +36,7 @@ export const AdminController = async (req, res) => {
     }
 
     // password security validation
-    if (password.length <= 7) {
+    if (password.length >= 8) {
       return res.status(400).json({
         success: false,
         message: "minimum password length 8",
@@ -130,7 +130,7 @@ export const loginController = async (req, res) => {
           data: username,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1y" }
+        { expiresIn: "1d" }
       );
 
       // final response
@@ -153,45 +153,26 @@ export const loginController = async (req, res) => {
     });
   }
 };
-// every time app startup check token,supsciption
-export const logController = async (req, res) => {
+// every time app open ,create a new token
+export const startupController = async (req, res) => {
   try {
-    // get username from token
+    // previous token username
     const username = req.tokenDetails.data;
 
-    // check DB if user is exist
-    const findUser = await AuthModel.findOne({ username }).select(
-      "created permission"
+    // token generate
+    const token = jwt.sign(
+      {
+        data: username,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
     );
-    if (!findUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    // admin controller
-    if (findUser.permission == false) {
-      return res.status(400).json({
-        success: false,
-        message: "blocked by admin",
-      });
-    }
-
-    // Check year subscription
-    const userAccessYear = new Date(findUser.created);
-    userAccessYear.setFullYear(userAccessYear.getFullYear() + 1);
-    if (new Date() > userAccessYear) {
-      return res.status(400).json({
-        success: false,
-        message: "Account expired",
-      });
-    }
 
     // final response
     res.status(200).json({
       success: true,
       message: "access",
+      token: token,
     });
   } catch (error) {
     console.log(error);
@@ -214,39 +195,8 @@ export const shopController = async (req, res) => {
       });
     }
 
-    // identify token
-    const username = req.tokenDetails.data;
-
-    // find db
-    const findUser = await AuthModel.findOne({ username }).select(
-      "created permission"
-    );
-
-    // check user
-    if (!findUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    // admin controller
-    if (findUser.permission == false) {
-      return res.status(400).json({
-        success: false,
-        message: "blocked by admin",
-      });
-    }
-
-    // Check year subscription
-    const userAccessYear = new Date(findUser.created);
-    userAccessYear.setFullYear(userAccessYear.getFullYear() + 1);
-    if (new Date() > userAccessYear) {
-      return res.status(400).json({
-        success: false,
-        message: "Account expired",
-      });
-    }
+    // appAccess middleware
+    const findUser = req.tokenDB;
 
     // Update shop details
     findUser.shopDetails = {
@@ -272,9 +222,29 @@ export const shopController = async (req, res) => {
 };
 // printer details of each owner
 export const printerController = async (req, res) => {
-  // header footer logo
-  res.status(200).json({
-    success: false,
-    message: "code is empty",
-  });
+  try {
+    const { header, footer } = req.body;
+
+    // appAccess middleware
+    const findUser = req.DB;
+
+    // Update printer details
+    findUser.PrinterDetails = {
+      header,
+      footer,
+    };
+    await findUser.save();
+
+    // final response
+    res.status(200).json({
+      success: true,
+      message: "data saved successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
