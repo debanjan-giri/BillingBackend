@@ -75,6 +75,38 @@ export const createBillController = async (req, res) => {
 // bill by id details (food name price date total)
 export const billDetailsByIdController = async (req, res) => {
   try {
+    // get username from token
+    const username = req.tokenDetails.data;
+
+    // check DB if user is exist
+    const findUser = await AuthModel.findOne({ username }).select(
+      "created permission billList"
+    );
+    if (!findUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // admin controller
+    if (findUser.permission == false) {
+      return res.status(400).json({
+        success: false,
+        message: "blocked by admin",
+      });
+    }
+
+    // Check year subscription
+    const userAccessYear = new Date(findUser.created);
+    userAccessYear.setFullYear(userAccessYear.getFullYear() + 1);
+    if (new Date() > userAccessYear) {
+      return res.status(400).json({
+        success: false,
+        message: "Account expired",
+      });
+    }
+
     // Get the bill ID
     const billId = req.params.billId;
 
@@ -146,10 +178,10 @@ export const monthBillDetailsController = async (req, res) => {
     // Get username from the token
     const username = req.tokenDetails.data;
 
-    // Check if the user exists
-    const findUser = await AuthModel.findOne({ username }).select(
-      "created permission billList"
-    );
+    // Check if the user exists and populate the billList field
+    const findUser = await AuthModel.findOne({ username })
+      .select("created permission billList")
+      .populate("billList", "_id date totalPrice");
 
     // if user not found
     if (!findUser) {
@@ -160,7 +192,7 @@ export const monthBillDetailsController = async (req, res) => {
     }
 
     // Check admin permissions
-    if (findUser.permission === false) {
+    if (!findUser.permission) {
       return res.status(400).json({
         success: false,
         message: "Blocked by admin",
@@ -198,13 +230,10 @@ export const monthBillDetailsController = async (req, res) => {
     // End of the requested month
     const endOfMonth = new Date(new Date().getFullYear(), monthIndex + 1, 0);
 
-    // Find bills for between requested month
-    const monthBills = await BillModel.find({
-      date: {
-        $gte: startOfMonth,
-        $lte: endOfMonth,
-      },
-    }).select("_id date totalPrice");
+    // Filter bills for the requested month
+    const monthBills = findUser.billList.filter((bill) => {
+      return bill.date >= startOfMonth && bill.date <= endOfMonth;
+    });
 
     // Calculate total amount for the month
     const totalAmountForMonth = monthBills.reduce(
@@ -254,10 +283,23 @@ export const dayBillDetailsController = async (req, res) => {
     // Get username from the token
     const username = req.tokenDetails.data;
 
-    // Check if the user exists
-    const findUser = await AuthModel.findOne({ username }).select(
-      "created permission billList"
-    );
+    // Check if the user exists and populate the billList field
+    const findUser = await AuthModel.findOne({ username })
+      .select("created permission billList")
+      .populate({
+        path: "billList",
+        match: {
+          date: {
+            $gte: new Date(req.params.day),
+            $lt: new Date(
+              new Date(req.params.day).setDate(
+                new Date(req.params.day).getDate() + 1
+              )
+            ),
+          },
+        },
+        select: "_id date totalPrice",
+      });
 
     if (!findUser) {
       return res.status(404).json({
@@ -284,31 +326,8 @@ export const dayBillDetailsController = async (req, res) => {
       });
     }
 
-    // Get the day
-    const requestedDay = req.params.day;
-
-    // create Date object
-    const startOfDay = new Date(requestedDay);
-
-    // Check if the parsed date is valid
-    if (isNaN(startOfDay.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid date format",
-      });
-    }
-
-    // Today + 1 = end of the day
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(endOfDay.getDate() + 1);
-
-    // Find bills for the requested day
-    const dayBills = await BillModel.find({
-      date: {
-        $gte: startOfDay,
-        $lt: endOfDay,
-      },
-    }).select("_id date totalPrice");
+    // Extracted user bills from populated billList
+    const dayBills = findUser.billList;
 
     // Calculate total bill for the day
     const totalBillForDay = dayBills.reduce(
@@ -358,10 +377,19 @@ export const dateRangeBillDetailsController = async (req, res) => {
     // Get username from the token
     const username = req.tokenDetails.data;
 
-    // Check if the user exists
-    const findUser = await AuthModel.findOne({ username }).select(
-      "created permission billList"
-    );
+    // Check if the user exists and populate the billList field
+    const findUser = await AuthModel.findOne({ username })
+      .select("created permission billList")
+      .populate({
+        path: "billList",
+        match: {
+          date: {
+            $gte: new Date(req.params.startDate),
+            $lte: new Date(req.params.endDate),
+          },
+        },
+        select: "_id date totalPrice",
+      });
 
     if (!findUser) {
       return res.status(404).json({
@@ -388,25 +416,8 @@ export const dateRangeBillDetailsController = async (req, res) => {
       });
     }
 
-    // Get start and end dates
-    const startDate = new Date(req.params.startDate);
-    const endDate = new Date(req.params.endDate);
-
-    // Check if the dates are valid
-    if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid date range",
-      });
-    }
-
-    // Find bills for the specified date range
-    const dateRangeBills = await BillModel.find({
-      date: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).select("_id date totalPrice");
+    // Extracted user bills from populated billList
+    const dateRangeBills = findUser.billList;
 
     // Calculate total amount
     const totalAmountForDateRange = dateRangeBills.reduce(
@@ -414,7 +425,7 @@ export const dateRangeBillDetailsController = async (req, res) => {
       0
     );
 
-    // claculate total bill
+    // Calculate total bills generated
     const totalBillsGenerated = dateRangeBills.length;
 
     // Format dates
