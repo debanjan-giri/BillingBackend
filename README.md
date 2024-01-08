@@ -1,2 +1,21 @@
-Figma Prototype Link
-[Link Text] (https://www.figma.com/proto/yYvJfsa2CFdDxCVVH7RY9c/running?node-id=182-2)
+# POS Billing Backend
+
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+
+## Overview
+
+Billing Backend is a Node.js application that provides RESTful APIs for managing authentication, bill creation, category management, food items, and more.
+
+## Figma Prototype
+
+[Figma Prototype Link](https://www.figma.com/proto/yYvJfsa2CFdDxCVVH7RY9c/running?node-id=182-2)
+
+## Getting Started
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone <repository-url>
