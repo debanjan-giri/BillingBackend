@@ -19,3 +19,16 @@ Billing Backend is a Node.js application that provides RESTful APIs for managing
 
    ```bash
    git clone <repository-url>
+
+## 1. Install dependencies:
+  - npm install
+
+## 2.Set up environment variables:
+- Create a .env file in the root directory with the following content:
+- PORT=9090
+MONGODB_URI=<your-mongodb-uri>
+SECRET_KEY=<your-secret-key>
+
+## Run the application
+- npm start
+
