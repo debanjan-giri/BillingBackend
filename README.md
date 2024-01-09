@@ -1,5 +1,7 @@
 # POS Billing APP Backend ( MVC architecture )
 
+Billing Backend is a Node.js application that provides RESTful APIs for managing authentication, bill creation, category management, food items, and more.
+
 ## Technology used 
 
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
@@ -7,9 +9,6 @@
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
 
-## Overview
-
-Billing Backend is a Node.js application that provides RESTful APIs for managing authentication, bill creation, category management, food items, and more.
 
 ## Figma Prototype
 
