@@ -23,7 +23,7 @@ Billing Backend is a Node.js application that provides RESTful APIs for managing
 - Create a .env file in the root directory with the following content:
 - PORT=9090
 - MONGODB_URI=<your-mongodb-uri>
-- SECRET_KEY=<your-jwt-secret-key>
+- SECRET_KEY=<your-secret-key>
 
 ## Run the application
 - npm start
