@@ -10,7 +10,7 @@ Billing Backend is a Node.js application that provides RESTful APIs for managing
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
 
 
-## Figma Prototype
+## 🌟 UI/UX Design using ( Figma )
 
 [Figma Prototype Link](https://www.figma.com/proto/yYvJfsa2CFdDxCVVH7RY9c/running?node-id=182-2)
 
