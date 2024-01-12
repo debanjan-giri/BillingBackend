@@ -14,7 +14,7 @@
 
 Explore the interactive UI/UX design crafted using Figma:[Figma Prototype Link](https://www.figma.com/proto/yYvJfsa2CFdDxCVVH7RY9c/running?node-id=182-2)
 
-# Getting Started: ✅
+# Getting Started:
 
 ```bash
 # 1. Install dependencies:
