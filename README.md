@@ -20,6 +20,8 @@ Explore the interactive UI/UX design crafted using Figma:[Figma Prototype Link](
 # 1. Install dependencies:
 - npm install
 #----------------------------------------
+
+```env
 # 2. Set up environment variables:
 # Create a .env file in the root directory
 # with the following content:
@@ -28,6 +30,8 @@ Explore the interactive UI/UX design crafted using Figma:[Figma Prototype Link](
 - MONGODB_URI=<your-mongodb-uri>
 - SECRET_KEY=<your-secret-key>
 #---------------------------------------
+
+```bash
 # 3. Run the application:
 - npm start
 
