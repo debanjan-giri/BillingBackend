@@ -22,10 +22,12 @@ Explore the interactive UI/UX design crafted using Figma:[Figma Prototype Link](
 
 ## Set up environment variables:
 - Create a .env file in the root directory with the following content:
+```bash
 - PORT=9090
 - MONGODB_URI=<your-mongodb-uri>
 - SECRET_KEY=<your-secret-key>
 
 ## Run the application:
+```bash
 - npm start
 
