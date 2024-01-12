@@ -1,16 +1,14 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
-// model
+import jwt from "jsonwebtoken";
 import AuthModel from "../model/AuthModel.js";
 
-// create user credential,start subcription
+// create user credential & start subcription
 export const AdminController = async (req, res) => {
   try {
-    // user details from req.body
+    // input details from req.body
     const { username, password } = req.body;
 
-    // validation
+    // input validation
     if (!username || !password) {
       return res.status(400).json({
         success: false,
@@ -27,7 +25,7 @@ export const AdminController = async (req, res) => {
       });
     }
 
-    // username security validation
+    // username (email) validation
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) {
       return res.status(400).json({
         success: false,
@@ -47,7 +45,7 @@ export const AdminController = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
 
-    // create user
+    // create new user
     await AuthModel.create({
       username,
       password: hashPassword,
