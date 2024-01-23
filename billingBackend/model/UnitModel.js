@@ -5,6 +5,12 @@ const unitSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  foods: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Food",
+    },
+  ],
 });
 
 export default mongoose.model("Unit", unitSchema);
