@@ -34,7 +34,7 @@ export const AdminController = async (req, res) => {
     }
 
     // password security validation
-    if (password.length <= 6) {
+    if (password.length <= 8) {
       return res.status(400).json({
         success: false,
         message: "minimum password length 8",
