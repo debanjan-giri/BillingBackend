@@ -8,7 +8,6 @@ import CategoryModel from "../model/CategoryModel.js";
 export const createCategoryController = async (req, res) => {
   try {
     const { categoryName } = req.body;
-
     // validation
     if (!categoryName) {
       return res.status(400).json({
@@ -30,6 +29,7 @@ export const createCategoryController = async (req, res) => {
         message: "User not found",
       });
     }
+
     // admin controller
     if (findUser.permission == false) {
       return res.status(400).json({
@@ -47,9 +47,28 @@ export const createCategoryController = async (req, res) => {
       });
     }
     // create category
-    const createdCategory = await CategoryModel.create({
-      name: categoryName,
-    });
+    const createdCategory = await CategoryModel.findOneAndUpdate(
+      {
+        name: categoryName,
+      },
+      {
+        name: categoryName,
+      },
+      {
+        upsert: true, // Set to true to perform an upsert
+        new: true, // Set to true to return the modified document (if upserted)
+      }
+    );
+
+    // check  if category pre exist In the current User
+    const isCategoryExist = findUser.categoryList.includes(createdCategory._id);
+
+    if (isCategoryExist) {
+      return res.status(409).json({
+        success: true,
+        message: "category already Exist",
+      });
+    }
 
     // store within user
     findUser.categoryList.push(createdCategory._id);
@@ -151,14 +170,10 @@ export const getCategoryDetailsController = async (req, res) => {
       .select("created permission categoryList")
       .populate({
         path: "categoryList",
-        select: "-__v",
+        select: "-__v -_id",
         populate: {
           path: "foods",
-          select: "name price unit _id",
-          populate: {
-            path: "unit",
-            select: "name -_id",
-          },
+          select: "name price unit _id category",
         },
       });
 
@@ -187,24 +202,10 @@ export const getCategoryDetailsController = async (req, res) => {
       });
     }
 
-    // unit {object name:kg} view like food {unit:kg}
-    const structureView = {
-      categoryList: findUser.categoryList.map((category) => ({
-        categoryId: category._id,
-        name: category.name,
-        foods: category.foods.map((food) => ({
-          foodId: food._id,
-          name: food.name,
-          price: food.price,
-          unit: food.unit ? food.unit.name : null,
-        })),
-      })),
-    };
-
     // final response
     res.status(200).json({
       success: true,
-      data: structureView,
+      data: findUser.categoryList,
     });
   } catch (error) {
     console.error(error);
@@ -351,6 +352,60 @@ export const getCategoryIdListController = async (req, res) => {
     res.status(200).json({
       success: true,
       data: categoryIds,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+//fetch all category lists
+export const getAllCategoryList = async (req, res) => {
+  try {
+    // Get username from the token
+    const username = req.tokenDetails.data;
+
+    // Check DB if the user exists
+    const findUser = await AuthModel.findOne({ username })
+      .select("created permission categoryList")
+      .populate({ path: "categoryList", select: "_id name" });
+
+    if (!findUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Admin controller
+    if (findUser.permission === false) {
+      return res.status(400).json({
+        success: false,
+        message: "Blocked by admin",
+      });
+    }
+
+    // Check year subscription
+    const userAccessYear = new Date(findUser.created);
+    userAccessYear.setFullYear(userAccessYear.getFullYear() + 1);
+    if (new Date() > userAccessYear) {
+      return res.status(400).json({
+        success: false,
+        message: "Account expired",
+      });
+    }
+
+    // Extract only the category IDs
+    const categoryLists = findUser.categoryList;
+
+    // final response
+    res.status(200).json({
+      success: true,
+      message: "success fully fetch Category Lists",
+      data: categoryLists,
     });
   } catch (error) {
     console.error(error);

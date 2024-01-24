@@ -30,7 +30,7 @@ AuthRoute.post("/create", logger, validation, AdminController);
 // "username" : "devposto@gmail.com",
 // "password" : "devposto"
 // }
-AuthRoute.post("/login", logger, validation, loginController);
+AuthRoute.post("/login", validation, loginController);
 
 // http://localhost:8080/auth/access
 // req.header.Authorization ( fill the token )

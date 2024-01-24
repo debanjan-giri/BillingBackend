@@ -1,11 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-
-import connectDB from "./config/db.js";
+
+
+import connectDB from "./config/db.js";
+
 import errorHandler from "./middleware/ErrorHandlerMiddleware.js";
 import limiter from "./middleware/RateLimitMiddleware.js";
-
+
+
 import AuthRoute from "./routes/AuthRoute.js";
 import FoodRoute from "./routes/FoodRoute.js";
 import CategoryRoute from "./routes/CategoryRoute.js";
@@ -31,7 +34,7 @@ app.use(express.json());
 app.use(limiter);
 
 // routes middleware
-app.use("/auth/", AuthRoute);
+app.use("/auth", AuthRoute);
 app.use("/food", FoodRoute);
 app.use("/unit", UnitRoute);
 app.use("/category", CategoryRoute);

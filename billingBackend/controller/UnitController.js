@@ -9,6 +9,8 @@ export const createUnitController = async (req, res) => {
   try {
     const { unitName } = req.body;
 
+    console.log(unitName);
+
     // validation
     if (!unitName) {
       return res.status(400).json({
@@ -47,10 +49,26 @@ export const createUnitController = async (req, res) => {
       });
     }
     // create unit
-    const newUnit = await UnitModel.create({
-      name: unitName,
-    });
+    const newUnit = await UnitModel.findOneAndUpdate(
+      { name: unitName },
+      {
+        name: unitName,
+      },
+      {
+        upsert: true, // Set to true to perform an upsert
+        new: true, // Set to true to return the modified document (if upserted)
+      }
+    );
 
+    // check  if Unit pre exist In the current User
+    const isUnitExist = findUser.unitList.includes(newUnit._id);
+
+    if (isUnitExist) {
+      return res.status(409).json({
+        success: true,
+        message: "Unit already Exist",
+      });
+    }
     // also add unit id within user
     findUser.unitList.push(newUnit._id);
     await findUser.save();

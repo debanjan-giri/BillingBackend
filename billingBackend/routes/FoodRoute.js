@@ -4,6 +4,7 @@ import express from "express";
 import {
   createFoodController,
   deleteFoodController,
+  getFoodList,
 } from "../controller/FoodController.js";
 
 // middleware
@@ -36,5 +37,8 @@ FoodRoute.delete(
   logRequest,
   deleteFoodController
 );
+
+// http://localhost:8080/food/getallfood/
+FoodRoute.get("/getallfood", tokenCheck, getFoodList);
 
 export default FoodRoute;

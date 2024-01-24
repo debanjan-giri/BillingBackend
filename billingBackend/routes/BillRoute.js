@@ -30,7 +30,7 @@ const BillRoute = express.Router();
 //   ]
 // }
 
-BillRoute.post("/create", tokenCheck, logRequest, createBillController);
+BillRoute.post("/create", tokenCheck, createBillController);
 
 // http://localhost:8080/bill/day/2023-11-19
 BillRoute.get("/day/:day", tokenCheck, logRequest, dayBillDetailsController);

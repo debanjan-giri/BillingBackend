@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+
 import AuthModel from "../model/AuthModel.js";
 
 // create user credential & start subcription
@@ -34,10 +35,10 @@ export const AdminController = async (req, res) => {
     }
 
     // password security validation
-    if (password.length <= 8) {
+    if (password.length <= 5) {
       return res.status(400).json({
         success: false,
-        message: "minimum password length 8",
+        message: "minimum password length 6",
       });
     }
 
@@ -68,7 +69,10 @@ export const AdminController = async (req, res) => {
 // user login,device token store,supcription check
 export const loginController = async (req, res) => {
   try {
+    console.log(req.body);
     const { username, password } = req.body;
+
+    console.log(username, password);
 
     // validation
     if (!username || !password) {
@@ -128,7 +132,7 @@ export const loginController = async (req, res) => {
           data: username,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1d" }
+        { expiresIn: "30d" }
       );
 
       // final response

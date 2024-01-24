@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import AuthModel from "../model/AuthModel.js";
 import FoodModel from "../model/FoodModel.js";
 import CategoryModel from "../model/CategoryModel.js";
+import UnitModel from "../model/UnitModel.js";
 
 // create food and store food id to category
 export const createFoodController = async (req, res) => {
@@ -18,13 +19,41 @@ export const createFoodController = async (req, res) => {
       });
     }
 
+    const username = req.tokenDetails.data;
+
+    // check DB if user is exist
+    const findUser = await AuthModel.findOne({ username }).select(
+      "created permission foodList"
+    );
+
     // create food
-    const createdFood = await FoodModel.create({
-      name: foodName,
-      price: foodPrice,
-      category: foodCategory,
-      unit: foodUnit,
-    });
+    const createdFood = await FoodModel.findOneAndUpdate(
+      {
+        name: foodName,
+        price: foodPrice,
+        category: foodCategory,
+        unit: foodUnit,
+      },
+      {
+        name: foodName,
+        price: foodPrice,
+        category: foodCategory,
+        unit: foodUnit,
+      },
+      {
+        upsert: true, // Set to true to perform an upsert
+        new: true, // Set to true to return the modified document (if upserted)
+      }
+    );
+
+    const isFoodExist = findUser?.foodList.includes(createdFood._id);
+
+    if (isFoodExist) {
+      return res.status(409).json({
+        success: false,
+        message: "food is already Created",
+      });
+    }
 
     // store food it within category
     const updatedCategory = await CategoryModel.findOneAndUpdate(
@@ -33,12 +62,22 @@ export const createFoodController = async (req, res) => {
       { new: true }
     );
 
-    if (!updatedCategory) {
+    const updatedUnit = await UnitModel.findOneAndUpdate(
+      { _id: foodUnit },
+      { $push: { foods: createdFood._id } },
+      { new: true }
+    );
+
+    if (!updatedCategory || !updatedUnit) {
+      await FoodModel.findByIdAndDelete(createdFood._id);
       return res.status(404).json({
         success: false,
-        message: "Category not found",
+        message: "Category or Unit not found",
       });
     }
+
+    findUser.foodList.push(createdFood._id);
+    await findUser.save();
 
     // final response
     res.status(200).json({
@@ -129,6 +168,53 @@ export const deleteFoodController = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const getFoodList = async (req, res) => {
+  try {
+    const username = req.tokenDetails.data;
+
+    // fetch current user
+    // Fetch FoodList
+    const findUser = await AuthModel.findOne({ username })
+      .select("foodList")
+      .populate({
+        path: "foodList",
+        select: "name price unit category",
+        populate: [
+          {
+            path: "category",
+            select: "name -_id", // Only select the 'name' field from the 'Category' model
+          },
+          {
+            path: "unit",
+            select: "name -_id", // Only select the 'name' field from the 'Unit' model
+          },
+        ],
+      });
+
+    // change the response
+    const foodList = findUser.foodList.map((item) => {
+      const { _id, price, name, category, unit } = item;
+      return {
+        _id,
+        price,
+        name,
+        category: category ? category.name : undefined,
+        unit: unit ? unit.name : undefined,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      message: foodList,
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Internal Server Error",

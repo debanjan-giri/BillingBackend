@@ -2,7 +2,7 @@ import { validationResult, check } from "express-validator";
 
 const validation = [
   check("username").isEmail().normalizeEmail(),
-  check("password").isLength({ min: 8 }),
+  check("password").isLength({ min: 6 }),
 
   // for more secure password
   // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, 'g')

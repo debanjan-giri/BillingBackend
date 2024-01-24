@@ -11,6 +11,7 @@ import {
   getCategoryDetailsController,
   getByIdCategoryController,
   getCategoryIdListController,
+  getAllCategoryList,
 } from "../controller/CategoryController.js";
 
 // route
@@ -45,6 +46,9 @@ CategoryRoute.get(
   logRequest,
   getCategoryIdListController
 );
+
+// http://localhost:8080/category/categorylist
+CategoryRoute.get("/categoryList", tokenCheck, logRequest, getAllCategoryList);
 
 // http://localhost:8080/category/idListDetails
 // {

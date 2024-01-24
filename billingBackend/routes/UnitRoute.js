@@ -21,7 +21,7 @@ const UnitRoute = express.Router();
 UnitRoute.post("/create", tokenCheck, logRequest, createUnitController);
 
 // http://localhost:8080/unit/view
-UnitRoute.get("/view", tokenCheck, logRequest, getUnitController);
+UnitRoute.get("/unit_list", tokenCheck, logRequest, getUnitController);
 
 // http://localhost:8080/unit/delete/6559920ee98565ee3c7a3583
 UnitRoute.delete(

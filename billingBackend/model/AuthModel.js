@@ -52,6 +52,12 @@ const authSchema = new mongoose.Schema({
       ref: "Unit",
     },
   ],
+  foodList: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Food",
+    },
+  ],
 });
 
 // indexing
