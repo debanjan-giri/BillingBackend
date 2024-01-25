@@ -12,6 +12,7 @@ const categorySchema = new mongoose.Schema({
       ref: "Food",
     },
   ],
-});
+},
+{ timestamps: true });
 
 export default mongoose.model("Category", categorySchema);
