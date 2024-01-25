@@ -221,3 +221,84 @@ export const getFoodList = async (req, res) => {
     });
   }
 };
+
+export const editFoodControlller = async (req, res) => {
+  try {
+    const { foodId, categoryId, unitId, foodName, foodPrice } = req.body;
+    if (!foodId || !foodName || !categoryId || !unitId || !foodPrice) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "All feild required \n [foodId, foodName, categoryId, unitId, foodPrice]",
+      });
+    }
+
+    // Get username from token
+    const username = req.tokenDetails.data;
+
+    // Check if user exists in the database
+    const user = await AuthModel.findOne({ username }).select(
+      "created permission foodList categoryList unitList"
+    );
+
+    // Check if the food exists in the current user's foodList
+    const isFoodExist = user.foodList.includes(foodId);
+
+    // Check if the Food ID belongs to the current user or not
+    if (!isFoodExist) {
+      return res.status(401).json({
+        success: true,
+        message: "Food does not belong to you",
+      });
+    }
+
+    // Check if the food exists in the current user's categoryList
+    const isCategoryExist = user.categoryList.includes(categoryId);
+
+    // Check if the category ID belongs to the current user or not
+    if (!isCategoryExist) {
+      return res.status(401).json({
+        success: true,
+        message: "Category does not belong to you",
+      });
+    }
+
+    // Check if the Unit exists in the current user's unitList
+    const isUnitExist = user.unitList.includes(unitId);
+
+    // Check if the unit ID belongs to the current user or not
+    if (!isUnitExist) {
+      return res.status(401).json({
+        success: true,
+        message: "Unit does not belong to you",
+      });
+    }
+
+    // Food Update query
+    const updatedFood = await FoodModel.findOneAndUpdate(
+      { _id: foodId }, // Filter by food ID and old category ID
+      {
+        $set: {
+          category: categoryId,
+          unit: unitId,
+          name: foodName,
+          price: foodPrice,
+        },
+      } // Update the category ID
+      // { new: true } // Return the modified document after update
+    );
+
+    // Final response
+    res.status(200).json({
+      success: true,
+      message: "Food edited Successfully",
+      updatedFood,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

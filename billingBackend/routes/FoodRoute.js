@@ -4,6 +4,7 @@ import express from "express";
 import {
   createFoodController,
   deleteFoodController,
+  editFoodControlller,
   getFoodList,
 } from "../controller/FoodController.js";
 
@@ -28,6 +29,22 @@ FoodRoute.post(
   subscriptionPermission,
   logRequest,
   createFoodController
+);
+
+// http://localhost:8080/food/edit
+// {
+//   "foodId":"65afcdaa0da147a2fa48a835",
+//   "foodName":"Rice",
+//   "foodPrice":"30",
+//   "categoryId":"65af3c09997643fd4ea85ab9",
+//   "unitId":"65b22cd4eec9327604a9778c"
+// }
+FoodRoute.post(
+  "/edit",
+  tokenCheck,
+  subscriptionPermission,
+  logRequest,
+  editFoodControlller
 );
 
 // http://localhost:8080/food/delete/65599077f168f33948319d79
