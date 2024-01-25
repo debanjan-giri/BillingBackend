@@ -27,6 +27,7 @@ CategoryRoute.post("/create", tokenCheck, logRequest, createCategoryController);
 // http://localhost:8080/category/edit
 // {
 // "categoryName" : "Dinner"
+// "categoryId" : "244kjhk256636"
 // }
 CategoryRoute.post("/edit", tokenCheck, logRequest, editCategoryController);
 

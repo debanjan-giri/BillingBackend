@@ -8,6 +8,7 @@ import logRequest from "../middleware/LoggerMiddleware.js";
 import {
   createUnitController,
   deleteUnitController,
+  editUnitController,
   getUnitController,
 } from "../controller/UnitController.js";
 
@@ -19,6 +20,13 @@ const UnitRoute = express.Router();
 // "unitName" : "gram"
 // }
 UnitRoute.post("/create", tokenCheck, logRequest, createUnitController);
+
+// http://localhost:8080/unit/create
+// {
+// "unitName" : "gram"
+// "unitId" : "87786868cv766966"
+// }
+UnitRoute.post("/edit", tokenCheck, logRequest, editUnitController);
 
 // http://localhost:8080/unit/view
 UnitRoute.get("/unit_list", tokenCheck, logRequest, getUnitController);
