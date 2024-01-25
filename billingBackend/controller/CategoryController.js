@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 // model
 import AuthModel from "../model/AuthModel.js";
 import CategoryModel from "../model/CategoryModel.js";
+import FoodModel from "../model/FoodModel.js";
 
 // create category and store id with user
 export const createCategoryController = async (req, res) => {
@@ -409,6 +410,105 @@ export const getAllCategoryList = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const editCategoryController = async (req, res) => {
+  try {
+    const { categoryName, categoryId } = req.body;
+
+    // Validation: Check if categoryName is provided
+    if (!categoryName || !categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category name  and Category id is required",
+      });
+    }
+
+    // Get username from token
+    const username = req.tokenDetails.data;
+
+    // Check if user exists in the database
+    const findUser = await AuthModel.findOne({ username }).select(
+      "created permission categoryList foodList"
+    );
+    if (!findUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Admin Controller: Check if user has admin privileges
+    if (findUser.permission == false) {
+      return res.status(400).json({
+        success: false,
+        message: "Blocked by admin",
+      });
+    }
+
+    // Check Year Subscription: Verify if user's subscription is still valid
+    const userAccessYear = new Date(findUser.created);
+    userAccessYear.setFullYear(userAccessYear.getFullYear() + 1);
+    if (new Date() > userAccessYear) {
+      return res.status(400).json({
+        success: false,
+        message: "Account expired",
+      });
+    }
+
+    // Check if the category exists in the current user's categoryList
+    const isCategoryExist = findUser.categoryList.includes(categoryId);
+
+    // Check if the category ID belongs to the current user or not
+    if (!isCategoryExist) {
+      return res.status(401).json({
+        success: true,
+        message: "Category does not belong to you",
+      });
+    }
+
+    // Create or Update Category: Upsert the category in the CategoryModel
+    const createdCategory = await CategoryModel.findOneAndUpdate(
+      {
+        name: categoryName,
+      },
+      {
+        name: categoryName,
+      },
+      {
+        upsert: true, // Set to true to perform an upsert
+        new: true, // Set to true to return the modified document (if upserted)
+      }
+    );
+
+    // Update the Food collection with the new category ID
+    for (const food of findUser.foodList) {
+      await FoodModel.findOneAndUpdate(
+        { _id: food._id, category: categoryId }, // Filter by food ID and old category ID
+        { $set: { category: createdCategory._id } }, // Update the category ID
+        { new: true } // Return the modified document after update
+      );
+    }
+
+    // Replace the previous category ID with the new category ID in the auth collection
+    const categoryIndex = findUser.categoryList.indexOf(categoryId);
+    findUser.categoryList.splice(categoryIndex, 1);
+    findUser.categoryList.push(createdCategory._id);
+    await findUser.save();
+
+    // Final response
+    res.status(200).json({
+      success: true,
+      message: "Category Edited Successfully",
+      CategoryId: createdCategory,
+    });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",

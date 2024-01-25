@@ -12,6 +12,7 @@ import {
   getByIdCategoryController,
   getCategoryIdListController,
   getAllCategoryList,
+  editCategoryController,
 } from "../controller/CategoryController.js";
 
 // route
@@ -22,6 +23,12 @@ const CategoryRoute = express.Router();
 // "categoryName" : "Dinner"
 // }
 CategoryRoute.post("/create", tokenCheck, logRequest, createCategoryController);
+
+// http://localhost:8080/category/edit
+// {
+// "categoryName" : "Dinner"
+// }
+CategoryRoute.post("/edit", tokenCheck, logRequest, editCategoryController);
 
 // http://localhost:8080/category/delete/6559887362171e8b05652958
 CategoryRoute.delete(
