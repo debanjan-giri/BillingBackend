@@ -132,7 +132,7 @@ export const loginController = async (req, res) => {
           data: username,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "30d" }
+        { expiresIn: "365d" }
       );
 
       // final response
