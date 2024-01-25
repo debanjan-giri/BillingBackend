@@ -461,3 +461,62 @@ export const dateRangeBillDetailsController = async (req, res) => {
     });
   }
 };
+
+// start date to end date param bill details
+export const dateRangeBillFullDetailsController = async (req, res) => {
+  try {
+    // Get username from the token
+    const username = req.tokenDetails.data;
+
+    // Check if the user exists and populate the billList field
+    const findUser = await AuthModel.findOne({ username })
+      .select("billList")
+      .populate({
+        path: "billList",
+        match: {
+          date: {
+            $gte: new Date(req.params.startDate), // Filter bills with date greater than or equal to startDate
+            $lte: new Date(req.params.endDate), // Filter bills with date less than or equal to endDate
+          },
+        },
+        select: "_id date totalPrice foodList",
+        populate: { path: "foodList.food" }, // Populate foodList field of each bill with food details
+      });
+
+    // Extracted user bills from populated billList
+    const dateRangeBills = findUser.billList;
+
+    // Format dates of bills to a human-readable format and extract food details with quantities
+    const formattedData = dateRangeBills.map((bill) => ({
+      _id: bill._id,
+      date: bill.date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }),
+      orderTime: bill.date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      totalPrice: bill.totalPrice,
+      foodDetails: bill.foodList.map((foodItem) => ({
+        foodName: foodItem.food.name,
+        price: foodItem.food.price,
+        quantity: foodItem.quantity,
+      })),
+    }));
+
+    // Final response
+    res.status(200).json({
+      success: true,
+      message: "bill reported successfully fetch",
+      data: formattedData,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

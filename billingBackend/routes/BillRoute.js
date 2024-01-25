@@ -12,6 +12,7 @@ import {
   dayBillDetailsController,
   monthBillDetailsController,
   dateRangeBillDetailsController,
+  dateRangeBillFullDetailsController,
 } from "../controller/BillController.js";
 
 // route
@@ -59,5 +60,14 @@ BillRoute.get(
   logRequest,
   dateRangeBillDetailsController
 );
+
+// http://localhost:8080/bill/date/2023-11-12/2023-12-26
+BillRoute.get(
+  "/details/date/:startDate/:endDate",
+  tokenCheck,
+  logRequest,
+  dateRangeBillFullDetailsController
+);
+
 
 export default BillRoute;
