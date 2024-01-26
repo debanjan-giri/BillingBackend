@@ -468,6 +468,10 @@ export const dateRangeBillFullDetailsController = async (req, res) => {
     // Get username from the token
     const username = req.tokenDetails.data;
 
+    const startDate = new Date(req.params.startDate);
+    const endDate = new Date(req.params.endDate);
+    endDate.setHours(23, 59, 59, 999); // Set time to 23:59:59.999
+
     // Check if the user exists and populate the billList field
     const findUser = await AuthModel.findOne({ username })
       .select("billList")
@@ -475,8 +479,8 @@ export const dateRangeBillFullDetailsController = async (req, res) => {
         path: "billList",
         match: {
           date: {
-            $gte: new Date(req.params.startDate), // Filter bills with date greater than or equal to startDate
-            $lte: new Date(req.params.endDate), // Filter bills with date less than or equal to endDate
+            $gte: startDate, // Filter bills with date greater than or equal to startDate
+            $lte: endDate, // Filter bills with date less than or equal to endDate
           },
         },
         select: "_id date totalPrice foodList",
