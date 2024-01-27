@@ -10,6 +10,7 @@ import {
   deleteUnitController,
   editUnitController,
   getUnitController,
+  removeUnitController,
 } from "../controller/UnitController.js";
 
 // route
@@ -37,6 +38,17 @@ UnitRoute.delete(
   tokenCheck,
   logRequest,
   deleteUnitController
+);
+
+// http://localhost:8080/unit/remove
+// {
+//   unitId:""
+// }
+UnitRoute.post(
+  "/remove",
+  tokenCheck,
+  logRequest,
+  removeUnitController
 );
 
 export default UnitRoute;

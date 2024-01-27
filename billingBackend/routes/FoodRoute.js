@@ -6,6 +6,7 @@ import {
   deleteFoodController,
   editFoodControlller,
   getFoodList,
+  removeFoodController,
 } from "../controller/FoodController.js";
 
 // middleware
@@ -53,6 +54,14 @@ FoodRoute.delete(
   tokenCheck,
   logRequest,
   deleteFoodController
+);
+
+// http://localhost:8080/food/remove
+FoodRoute.post(
+  "/remove",
+  tokenCheck,
+  logRequest,
+  removeFoodController
 );
 
 // http://localhost:8080/food/getallfood/

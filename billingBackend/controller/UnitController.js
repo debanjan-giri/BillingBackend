@@ -9,9 +9,6 @@ import FoodModel from "../model/FoodModel.js";
 export const createUnitController = async (req, res) => {
   try {
     const { unitName } = req.body;
-
-    console.log(unitName);
-
     // validation
     if (!unitName) {
       return res.status(400).json({
@@ -80,7 +77,7 @@ export const createUnitController = async (req, res) => {
       message: "unit created",
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -151,7 +148,7 @@ export const deleteUnitController = async (req, res) => {
       message: "unit deleted",
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -203,7 +200,6 @@ export const getUnitController = async (req, res) => {
       data: findUser.unitList,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -302,10 +298,45 @@ export const editUnitController = async (req, res) => {
       message: "Unit Edited Successfully",
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
+    });
+  }
+};
+
+export const removeUnitController = async (req, res) => {
+  try {
+    const { unitId } = req.body;
+    // Get username from token
+    const username = req.tokenDetails.data;
+    // Check if user exists in the database
+    const user = await AuthModel.findOneAndUpdate(
+      {
+        username: username,
+        unitList: unitId,
+      },
+      { $pull: { unitList: unitId } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(403).json({
+        success: false,
+        message: "Some error occur while Remove unit",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Unit Remove successfully",
+    });
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: "internal server error",
     });
   }
 };

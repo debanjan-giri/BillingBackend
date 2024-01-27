@@ -85,7 +85,7 @@ export const createFoodController = async (req, res) => {
       message: "food created",
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -167,7 +167,7 @@ export const deleteFoodController = async (req, res) => {
       message: "Food deleted",
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -295,10 +295,45 @@ export const editFoodControlller = async (req, res) => {
       updatedFood,
     });
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
+    });
+  }
+};
+
+export const removeFoodController = async (req, res) => {
+  try {
+    const { foodId } = req.body;
+    // Get username from token
+    const username = req.tokenDetails.data;
+    // Check if user exists in the database
+    const user = await AuthModel.findOneAndUpdate(
+      {
+        username: username,
+        foodList: foodId,
+      },
+      { $pull: { foodList: foodId } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(403).json({
+        success: false,
+        message: "Some error occur while Remove Food",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Food Remove successfully",
+    });
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: "internal server error",
     });
   }
 };

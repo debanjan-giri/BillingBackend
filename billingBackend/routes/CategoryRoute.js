@@ -13,6 +13,7 @@ import {
   getCategoryIdListController,
   getAllCategoryList,
   editCategoryController,
+  removeCategoryController,
 } from "../controller/CategoryController.js";
 
 // route
@@ -30,6 +31,12 @@ CategoryRoute.post("/create", tokenCheck, logRequest, createCategoryController);
 // "categoryId" : "244kjhk256636"
 // }
 CategoryRoute.post("/edit", tokenCheck, logRequest, editCategoryController);
+
+// http://localhost:8080/category/remove
+// {
+// categoryId:""
+// }
+CategoryRoute.post("/remove", tokenCheck, logRequest, removeCategoryController);
 
 // http://localhost:8080/category/delete/6559887362171e8b05652958
 CategoryRoute.delete(

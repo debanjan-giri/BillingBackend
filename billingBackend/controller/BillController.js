@@ -65,7 +65,6 @@ export const createBillController = async (req, res) => {
       message: "bill create succefully",
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -165,7 +164,6 @@ export const billDetailsByIdController = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -270,7 +268,6 @@ export const monthBillDetailsController = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -364,7 +361,6 @@ export const dayBillDetailsController = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -454,7 +450,6 @@ export const dateRangeBillDetailsController = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -517,7 +512,6 @@ export const dateRangeBillFullDetailsController = async (req, res) => {
       data: formattedData,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",

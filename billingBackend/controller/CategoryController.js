@@ -82,7 +82,7 @@ export const createCategoryController = async (req, res) => {
       CategoryId: createdCategory._id,
     });
   } catch (error) {
-    console.log(error);
+  
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -153,7 +153,7 @@ export const deleteCategoryController = async (req, res) => {
       message: "Category deleted",
     });
   } catch (error) {
-    console.log(error);
+  
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -209,7 +209,7 @@ export const getCategoryDetailsController = async (req, res) => {
       data: findUser.categoryList,
     });
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -303,7 +303,7 @@ export const getByIdCategoryController = async (req, res) => {
       data: structureView,
     });
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -355,7 +355,7 @@ export const getCategoryIdListController = async (req, res) => {
       data: categoryIds,
     });
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -409,7 +409,7 @@ export const getAllCategoryList = async (req, res) => {
       data: categoryLists,
     });
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -507,10 +507,45 @@ export const editCategoryController = async (req, res) => {
       message: "Category Edited Successfully",
     });
   } catch (error) {
-    console.log(error);
+  
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
+    });
+  }
+};
+
+
+export const removeCategoryController = async (req, res) => {
+  try {
+    const { categoryId } = req.body;
+    // Get username from token
+    const username = req.tokenDetails.data;
+    // Check if user exists in the database
+    const user = await AuthModel.findOneAndUpdate(
+      {
+        username: username,
+        categoryList: categoryId,
+      },
+      { $pull: { foodList: categoryId } },
+      { new: true }
+    )
+
+    if (!user) {
+      return res.status(403).json({
+        success: false,
+        message: "Some error occur while Remove category",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Category Remove successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "internal server error",
     });
   }
 };

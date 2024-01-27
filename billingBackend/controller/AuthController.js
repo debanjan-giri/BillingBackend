@@ -59,7 +59,6 @@ export const AdminController = async (req, res) => {
       message: "user created",
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -69,10 +68,7 @@ export const AdminController = async (req, res) => {
 // user login,device token store,supcription check
 export const loginController = async (req, res) => {
   try {
-    console.log(req.body);
     const { username, password } = req.body;
-
-    console.log(username, password);
 
     // validation
     if (!username || !password) {
@@ -84,7 +80,7 @@ export const loginController = async (req, res) => {
 
     // check DB
     const findUser = await AuthModel.findOne({ username }).select(
-      "username password permission created"
+      "username password permission shopDetails created"
     );
 
     // if invalid usename
@@ -139,6 +135,7 @@ export const loginController = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "login success",
+        data: findUser.shopDetails,
         token: token,
       });
     } else {
@@ -148,7 +145,6 @@ export const loginController = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -177,23 +173,24 @@ export const startupController = async (req, res) => {
       token: token,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
   }
 };
+
 // user details save
 export const shopController = async (req, res) => {
   try {
     const { shopName, shopAddress, shopNumber, shopGST } = req.body;
 
     // validation
-    if (!shopName || !shopAddress || !shopNumber || !shopGST) {
+    if (!shopName || !shopAddress || !shopNumber) {
       return res.status(400).json({
         success: false,
-        message: " all details are required",
+        message:
+          " all details are required \n [ shopName, shopAddress, shopNumber]",
       });
     }
 
@@ -213,15 +210,47 @@ export const shopController = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Shop details update",
+      data: findUser?.shopDetails,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
   }
 };
+
+export const shopDetailsController = async (req, res) => {
+  try {
+    // Get username from token
+    const username = req.tokenDetails.data;
+
+    // fetch user
+    const user = await AuthModel.findOne({ username }).select(
+      "created permission shopDetails"
+    );
+
+    if (!user.shopDetails.name) {
+      return res.status(404).json({
+        success: false,
+        message: "shop details not found",
+      });
+    }
+
+    // final response
+    res.status(200).json({
+      success: true,
+      message: "shop details fetch successfully",
+      data: user.shopDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 // printer details of each owner
 export const printerController = async (req, res) => {
   try {
@@ -243,7 +272,6 @@ export const printerController = async (req, res) => {
       message: "data saved successfully",
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",

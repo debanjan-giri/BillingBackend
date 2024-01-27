@@ -13,6 +13,7 @@ import {
   startupController,
   shopController,
   printerController,
+  shopDetailsController,
 } from "../controller/AuthController.js";
 
 // express route
@@ -31,6 +32,7 @@ AuthRoute.post("/create", logger, validation, AdminController);
 // "password" : "devposto"
 // }
 AuthRoute.post("/login", validation, loginController);
+
 
 // http://localhost:8080/auth/access
 // req.header.Authorization ( fill the token )
@@ -56,6 +58,9 @@ AuthRoute.post(
   subscriptionPermission,
   shopController
 );
+
+// http://localhost:8080/auth/shop_details
+AuthRoute.get("/shop_details", logger, tokenCheck, shopDetailsController);
 
 // http://localhost:8080/auth/printerUpdate
 AuthRoute.post(
