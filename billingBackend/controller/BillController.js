@@ -464,8 +464,11 @@ export const dateRangeBillFullDetailsController = async (req, res) => {
     const username = req.tokenDetails.data;
 
     const startDate = new Date(req.params.startDate);
+    startDate.setHours(0, 0, 0, 0);
     const endDate = new Date(req.params.endDate);
     endDate.setHours(23, 59, 59, 999); // Set time to 23:59:59.999
+
+    console.log(startDate.toLocaleString(), endDate.toLocaleString());
 
     // Check if the user exists and populate the billList field
     const findUser = await AuthModel.findOne({ username })

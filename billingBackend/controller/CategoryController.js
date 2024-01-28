@@ -82,7 +82,6 @@ export const createCategoryController = async (req, res) => {
       CategoryId: createdCategory._id,
     });
   } catch (error) {
-  
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -153,7 +152,6 @@ export const deleteCategoryController = async (req, res) => {
       message: "Category deleted",
     });
   } catch (error) {
-  
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -209,7 +207,6 @@ export const getCategoryDetailsController = async (req, res) => {
       data: findUser.categoryList,
     });
   } catch (error) {
-    
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -303,7 +300,6 @@ export const getByIdCategoryController = async (req, res) => {
       data: structureView,
     });
   } catch (error) {
-    
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -355,7 +351,6 @@ export const getCategoryIdListController = async (req, res) => {
       data: categoryIds,
     });
   } catch (error) {
-    
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -409,7 +404,6 @@ export const getAllCategoryList = async (req, res) => {
       data: categoryLists,
     });
   } catch (error) {
-    
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -507,14 +501,12 @@ export const editCategoryController = async (req, res) => {
       message: "Category Edited Successfully",
     });
   } catch (error) {
-  
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
   }
 };
-
 
 export const removeCategoryController = async (req, res) => {
   try {
@@ -527,9 +519,9 @@ export const removeCategoryController = async (req, res) => {
         username: username,
         categoryList: categoryId,
       },
-      { $pull: { foodList: categoryId } },
+      { $pull: { categoryList: categoryId } },
       { new: true }
-    )
+    );
 
     if (!user) {
       return res.status(403).json({

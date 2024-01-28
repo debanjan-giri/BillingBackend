@@ -57,14 +57,9 @@ FoodRoute.delete(
 );
 
 // http://localhost:8080/food/remove
-FoodRoute.post(
-  "/remove",
-  tokenCheck,
-  logRequest,
-  removeFoodController
-);
+FoodRoute.post("/remove", tokenCheck, logRequest, removeFoodController);
 
 // http://localhost:8080/food/getallfood/
-FoodRoute.get("/getallfood", tokenCheck, getFoodList);
+FoodRoute.get("/getallfood", logRequest, tokenCheck, getFoodList);
 
 export default FoodRoute;

@@ -2,12 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
-
 import connectDB from "./config/db.js";
 
 import errorHandler from "./middleware/ErrorHandlerMiddleware.js";
 import limiter from "./middleware/RateLimitMiddleware.js";
-
 
 import AuthRoute from "./routes/AuthRoute.js";
 import FoodRoute from "./routes/FoodRoute.js";
@@ -32,6 +30,10 @@ app.use(express.json());
 
 // brute force limit
 app.use(limiter);
+
+app.get("",(req,res)=>{
+res.send("server running")
+})
 
 // routes middleware
 app.use("/auth", AuthRoute);

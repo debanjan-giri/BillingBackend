@@ -87,7 +87,7 @@ export const loginController = async (req, res) => {
     if (!findUser) {
       return res.status(400).json({
         success: false,
-        message: "invalid credential",
+        message: "User Not Found \n please register first",
       });
     }
 
@@ -145,6 +145,7 @@ export const loginController = async (req, res) => {
       });
     }
   } catch (error) {
+    print(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
